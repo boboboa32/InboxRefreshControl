@@ -26,7 +26,7 @@
     self.tableView.delegate = self;
     [self.view addSubview:self.tableView];
     
-    self.refreshControl = [[InboxRefreshControl alloc] initWithSize:25];
+    self.refreshControl = [[InboxRefreshControl alloc] initWithSize:20];
     [self.tableView addSubview:self.refreshControl];
     
 }

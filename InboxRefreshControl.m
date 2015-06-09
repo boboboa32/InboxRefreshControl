@@ -13,11 +13,6 @@ typedef enum {
     InboxRefreshControlArcStateDecrease
 } InboxRefreshControlArcState;
 
-//typedef enum {
-//    InboxRefreshControlStateDefault = 0
-//    InboxRefreshControlStatePulling,
-//    InboxRefreshControlStateRefreshing,    
-//} InboxRefreshControlState;
 
 @interface InboxRefreshControl ()
 
@@ -33,7 +28,6 @@ typedef enum {
 @property (nonatomic, assign) CGFloat rotationAngle;
 @property (nonatomic, assign) CGFloat lineWidth;
 @property (nonatomic, strong) UIColor *circleColor;
-//@property (nonatomic, assign) InboxRefreshControlState state;
 
 @end
 
@@ -42,12 +36,14 @@ typedef enum {
 - (instancetype)initWithSize:(CGFloat)size {
     self = [super initWithFrame:CGRectMake(0, 0, size, size)];
     if (self) {
-        self.lineWidth = 3;
+        self.updateTimer = [NSTimer timerWithTimeInterval:1.f/60 target:self selector:@selector(update) userInfo:nil repeats:YES];
+        self.backgroundColor = [UIColor clearColor];
+        
+        // customize
+        self.lineWidth = 2;
         self.circleRadius = (size - self.lineWidth)/2;
         self.maxArcAngle = M_PI * 2 * 0.85;
         self.minArcAngle = M_PI * 2  * 0.15;
-        self.updateTimer = [NSTimer timerWithTimeInterval:1.f/60 target:self selector:@selector(update) userInfo:nil repeats:YES];
-        self.backgroundColor = [UIColor clearColor];
         self.circleColor = [UIColor blueColor];
     }
     return self;
