@@ -15,5 +15,6 @@
 - (instancetype)initWithSize:(CGFloat)size;
 - (void)beginRefreshing;
 - (void)endRefreshing;
+- (void)pullWithDistance:(CGFloat)pullingDistance;
 
 @end

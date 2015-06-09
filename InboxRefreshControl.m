@@ -13,6 +13,12 @@ typedef enum {
     InboxRefreshControlArcStateDecrease
 } InboxRefreshControlArcState;
 
+//typedef enum {
+//    InboxRefreshControlStateDefault = 0
+//    InboxRefreshControlStatePulling,
+//    InboxRefreshControlStateRefreshing,    
+//} InboxRefreshControlState;
+
 @interface InboxRefreshControl ()
 
 @property (nonatomic, assign) BOOL refreshing;
@@ -27,6 +33,7 @@ typedef enum {
 @property (nonatomic, assign) CGFloat rotationAngle;
 @property (nonatomic, assign) CGFloat lineWidth;
 @property (nonatomic, strong) UIColor *circleColor;
+//@property (nonatomic, assign) InboxRefreshControlState state;
 
 @end
 
@@ -37,8 +44,8 @@ typedef enum {
     if (self) {
         self.lineWidth = 3;
         self.circleRadius = (size - self.lineWidth)/2;
-        self.maxArcAngle = M_PI * 2 * 0.9;
-        self.minArcAngle = M_PI * 2  * 0.1;
+        self.maxArcAngle = M_PI * 2 * 0.85;
+        self.minArcAngle = M_PI * 2  * 0.15;
         self.updateTimer = [NSTimer timerWithTimeInterval:1.f/60 target:self selector:@selector(update) userInfo:nil repeats:YES];
         self.backgroundColor = [UIColor clearColor];
         self.circleColor = [UIColor blueColor];
@@ -49,10 +56,7 @@ typedef enum {
 - (void)beginRefreshing {
     self.refreshing = YES;
     
-    self.currentStartAngle = 0;
-    self.currentEndAngle = self.currentStartAngle + self.minArcAngle;
-    
-    [[NSRunLoop mainRunLoop] addTimer:self.updateTimer forMode:NSDefaultRunLoopMode];
+    [[NSRunLoop mainRunLoop] addTimer:self.updateTimer forMode:NSRunLoopCommonModes];
 }
 
 - (void)endRefreshing {
@@ -102,6 +106,30 @@ typedef enum {
         [self.updateTimer invalidate];
         self.updateTimer = nil;
     }
+    
+}
+
+- (void)pullWithDistance:(CGFloat)pullingDistance {
+    if (self.refreshing) {
+        return;
+    }
+    
+    CGFloat distance = pullingDistance;
+    CGFloat ignoredDistance = 50;
+    if (distance < ignoredDistance) {
+        return;
+    }
+    else {
+        distance = distance - ignoredDistance;
+    }
+    self.currentStartAngle = -M_PI/2;
+    CGFloat maxChangeSizePullingDistance = 50;
+    CGFloat scale = MIN(1, distance/maxChangeSizePullingDistance);
+    self.currentEndAngle = self.currentStartAngle + scale * self.maxArcAngle;
+    self.rotationAngle = scale * M_PI/2*3;
+    self.transform = CGAffineTransformMakeRotation(self.rotationAngle);
+    self.alpha = scale;
+    [self setNeedsDisplay];
 }
 
 @end
